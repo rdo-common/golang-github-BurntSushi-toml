@@ -14,7 +14,7 @@ Summary:        TOML parser and encoder for Go with reflection
 License:        BSD
 URL:            https://%{import_path}
 Source0:        https://%{import_path}/archive/%{commit}/%{name}-%{commit}.tar.gz
-ExclusiveArch:  %{go_arches}
+ExclusiveArch:  %{ix86} x86_64 %{arm}
 Provides:       tomlv = %{version}-%{release}
 
 %description
