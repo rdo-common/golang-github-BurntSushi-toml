@@ -4,16 +4,16 @@
 %global project         BurntSushi
 %global repo            toml
 %global import_path     %{provider}.%{provider_tld}/%{project}/%{repo}
-%global commit          bd2bdf7f18f849530ef7a1c29a4290217cab32a1
+%global commit          2ceedfee35ad3848e49308ab0c9a4f640cfb5fb2
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.2.git%{shortcommit}%{?dist}
+Release:        0.3.git%{shortcommit}%{?dist}
 Summary:        TOML parser and encoder for Go with reflection
 License:        BSD
 URL:            https://%{import_path}
-Source0:        https://%{import_path}/archive/%{commit}/%{name}-%{commit}.tar.gz
+Source0:        https://%{import_path}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 ExclusiveArch:  %{ix86} x86_64 %{arm}
 Provides:       tomlv = %{version}-%{release}
 
@@ -31,7 +31,7 @@ BuildArch:      noarch
 %{summary}
 
 %prep
-%setup -q -n %{name}-%{commit}
+%setup -q -n %{repo}-%{commit}
 
 %build
 mkdir -p _build/src/github.com/BurntSushi
@@ -60,6 +60,11 @@ GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}
 %{gopath}/src/%{import_path}/*.go
 
 %changelog
+* Thu Oct 23 2014 jchaloup <jchaloup@redhat.com> - 0-0.3.git2ceedfe
+- Bump to upstream 2ceedfee35ad3848e49308ab0c9a4f640cfb5fb2
+- spec file polishing to follow go draft
+  related: #1120865
+
 * Mon Sep 22 2014 jchaloup <jchaloup@redhat.com> - 0-0.2.gitbd2bdf7
 - do not own golang directories
 - defattr and attr not needed
