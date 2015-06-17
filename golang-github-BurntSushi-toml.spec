@@ -9,7 +9,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.3.git%{shortcommit}%{?dist}
+Release:        0.4.git%{shortcommit}%{?dist}
 Summary:        TOML parser and encoder for Go with reflection
 License:        BSD
 URL:            https://%{import_path}
@@ -60,6 +60,9 @@ GOPATH=%{buildroot}/%{gopath}:%{gopath} go test %{import_path}
 %{gopath}/src/%{import_path}/*.go
 
 %changelog
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0-0.4.git2ceedfe
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Thu Oct 23 2014 jchaloup <jchaloup@redhat.com> - 0-0.3.git2ceedfe
 - Bump to upstream 2ceedfee35ad3848e49308ab0c9a4f640cfb5fb2
 - spec file polishing to follow go draft
