@@ -50,6 +50,12 @@ ExclusiveArch:  %{go_arches}
 %else
 ExclusiveArch:   %{ix86} x86_64 %{arm}
 %endif
+# If gccgo_arches does not fit or is not defined fall through to golang
+%ifarch 0%{?gccgo_arches}
+BuildRequires:   gcc-go >= %{gccgo_min_vers}
+%else
+BuildRequires:   golang
+%endif
 
 %description
 %{summary}
@@ -128,7 +134,7 @@ install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
 # find all *.go but no *_test.go files and generate unit-test.file-list
 for file in $(find . -iname "*.go" \! -iname "*_test.go") ; do
     install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$(dirname $file)
-    cp $file %{buildroot}/%{gopath}/src/%{import_path}/$file
+    cp -pav $file %{buildroot}/%{gopath}/src/%{import_path}/$file
     echo "%%{gopath}/src/%%{import_path}/$file" >> devel.file-list
 done
 %endif
@@ -139,7 +145,7 @@ install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
 # find all *_test.go files and generate unit-test.file-list
 for file in $(find . -iname "*_test.go"); do
     install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$(dirname $file)
-    cp $file %{buildroot}/%{gopath}/src/%{import_path}/$file
+    cp -pav $file %{buildroot}/%{gopath}/src/%{import_path}/$file
     echo "%%{gopath}/src/%%{import_path}/$file" >> unit-test.file-list
 done
 %endif
