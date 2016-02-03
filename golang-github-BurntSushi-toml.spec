@@ -30,7 +30,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.5.git%{shortcommit}%{?dist}
+Release:        0.6.git%{shortcommit}%{?dist}
 Summary:        TOML parser and encoder for Go with reflection
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -169,6 +169,9 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0-0.6.git2ceedfe
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
 * Sat Sep 12 2015 jchaloup <jchaloup@redhat.com> - 0-0.5.git2ceedfe
 - Update to spec-2.1
   related: #1247656
