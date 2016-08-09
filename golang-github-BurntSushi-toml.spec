@@ -5,11 +5,11 @@
 %global with_check 1
 %global with_unit_test 1
 %else
-%global with_devel 0
+%global with_devel 1
 %global with_bundled 0
-%global with_debug 0
-%global with_check 0
-%global with_unit_test 0
+%global with_debug 1
+%global with_check 1
+%global with_unit_test 1
 %endif
 
 %if 0%{?with_debug}
@@ -30,7 +30,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.8.git%{shortcommit}%{?dist}
+Release:        0.9.git%{shortcommit}%{?dist}
 Summary:        TOML parser and encoder for Go with reflection
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -169,6 +169,10 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Tue Aug 09 2016 jchaloup <jchaloup@redhat.com> - 0-0.9.git2ceedfe
+- Enable devel and unit-test for epel7
+  related: #1247656
+
 * Thu Jul 21 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0-0.8.git2ceedfe
 - https://fedoraproject.org/wiki/Changes/golang1.7
 
