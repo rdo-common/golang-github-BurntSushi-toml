@@ -1,21 +1,36 @@
-%if 0%{?fedora} || 0%{?rhel} == 6
+# If any of the following macros should be set otherwise,
+# you can wrap any of them with the following conditions:
+# - %%if 0%%{centos} == 7
+# - %%if 0%%{?rhel} == 7
+# - %%if 0%%{?fedora} == 23
+# Or just test for particular distribution:
+# - %%if 0%%{centos}
+# - %%if 0%%{?rhel}
+# - %%if 0%%{?fedora}
+#
+# Be aware, on centos, both %%rhel and %%centos are set. If you want to test
+# rhel specific macros, you can use %%if 0%%{?rhel} && 0%%{?centos} == 0 condition.
+# (Don't forget to replace double percentage symbol with single one in order to apply a condition)
+
+# Generate devel rpm
 %global with_devel 1
+# Build project from bundled dependencies
 %global with_bundled 0
+# Build with debug info rpm
 %global with_debug 1
+# Run tests in check section
 %global with_check 1
+# Generate unit-test rpm
 %global with_unit_test 1
-%else
-%global with_devel 1
-%global with_bundled 0
-%global with_debug 1
-%global with_check 1
-%global with_unit_test 1
-%endif
 
 %if 0%{?with_debug}
 %global _dwz_low_mem_die_limit 0
 %else
 %global debug_package   %{nil}
+%endif
+
+%if ! 0%{?gobuild:1}
+%define gobuild(o:) go build -ldflags "${LDFLAGS:-} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n')" -a -v -x %{?**};
 %endif
 
 %global provider        github
@@ -30,7 +45,7 @@
 
 Name:           golang-%{provider}-%{project}-%{repo}
 Version:        0
-Release:        0.9.git%{shortcommit}%{?dist}
+Release:        0.10.git%{shortcommit}%{?dist}
 Summary:        TOML parser and encoder for Go with reflection
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -38,7 +53,7 @@ Source0:        https://%{provider_prefix}/archive/%{commit}/%{repo}-%{shortcomm
 Provides:       tomlv = %{version}-%{release}
 
 # e.g. el6 has ppc64 arch without gcc-go, so EA tag is required
-ExclusiveArch:  %{?go_arches:%{go_arches}}%{!?go_arches:%{ix86} x86_64 %{arm}}
+ExclusiveArch:  %{?go_arches:%{go_arches}}%{!?go_arches:%{ix86} x86_64 aarch64 %{arm}}
 # If go_compiler is not set to 1, there is no virtual provide. Use golang instead.
 BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang}
 
@@ -88,21 +103,20 @@ providing packages with %{import_path} prefix.
 %setup -q -n %{repo}-%{commit}
 
 %build
-%if 0%{?with_debug}
-function gobuild { go build -a -ldflags "-B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \n')" -v -x "$@"; }
+mkdir -p src/github.com/BurntSushi
+ln -s ../../../ src/github.com/BurntSushi/toml
+
+%if ! 0%{?with_bundled}
+export GOPATH=$(pwd):%{gopath}
 %else
-function gobuild { go build -a "$@"; }
+export GOPATH=$(pwd):$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
-mkdir -p _build/src/github.com/BurntSushi
-ln -sf $(pwd) _build/src/github.com/BurntSushi/toml
-export GOPATH=$(pwd)/_build:%{gopath}
-cd cmd/tomlv
-gobuild .
+%gobuild -o bin/tomlv %{import_path}/cmd/tomlv
 
 %install
 install -d %{buildroot}/%{_bindir}
-install -p -m 755 ./cmd/tomlv/tomlv %{buildroot}%{_bindir}/tomlv
+install -p -m 755 bin/tomlv %{buildroot}%{_bindir}/tomlv
 
 # source codes for building projects
 %if 0%{?with_devel}
@@ -165,10 +179,13 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %if 0%{?with_unit_test} && 0%{?with_devel}
 %files unit-test -f unit-test.file-list
 %license COPYING
-%doc README.md
 %endif
 
 %changelog
+* Tue Jan 17 2017 Jan Chaloupka <jchaloup@redhat.com> - 0-0.10.git2ceedfe
+- Polish the spec file
+  related: #1247656
+
 * Tue Aug 09 2016 jchaloup <jchaloup@redhat.com> - 0-0.9.git2ceedfe
 - Enable devel and unit-test for epel7
   related: #1247656
